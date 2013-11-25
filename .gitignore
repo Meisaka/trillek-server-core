@@ -11,3 +11,14 @@
 *.lai
 *.la
 *.a
+
+# CMake stuff
+CMakeFiles
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+
+# backups
+*~
+
