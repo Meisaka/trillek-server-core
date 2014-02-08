@@ -6,17 +6,49 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin )
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
+set(SERVER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(SERVER_INC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
 set(ALL_INCLUDE_DIRS
 	"${PROJECT_BINARY_DIR}"
-	"${CMAKE_SOURCE_DIR}/include"
-	"${CMAKE_SOURCE_DIR}/src/net/include"
+	"${SERVER_INC}"
+	"${SERVER_SRC}/net/include"
 	)
 
-file(GLOB ALL_SRC
-	"${CMAKE_SOURCE_DIR}/src/*"
-	"${CMAKE_SOURCE_DIR}/src/net/src/*"
+file(GLOB NET_SRC
+	"${SERVER_SRC}/net/src/*.c*"
+	"${SERVER_SRC}/net/include/net/*.h*"
+	)
+source_group("net" FILES ${NET_SRC})
+
+file(GLOB SIM_SRC
+	"${SERVER_SRC}/simulations/*.c*"
+	)
+source_group("simulations" FILES ${SIM_SRC})
+
+file(GLOB CONTEXT_SRC
+	"${SERVER_SRC}/context/*.c*"
+	"${SERVER_INC}/context/*.h*"
+	)
+source_group("context" FILES ${CONTEXT_SRC})
+
+file(GLOB ENTITIES_SRC
+	"${SERVER_SRC}/entities/*.c*"
+	)
+source_group("simulations" FILES ${ENTITIES_SRC})
+
+file(GLOB MAIN_SRC
+	"${SERVER_SRC}/*.c*"
+	"${SERVER_INC}/*.h*"
 	)
 
+set(ALL_SRC
+	${NET_SRC}
+	${MAIN_SRC}
+	${SIM_SRC}
+	${CONTEXT_SRC}
+	${ENTITIES_SRC}
+	)
 include_directories(${ALL_INCLUDE_DIRS})
 
 # check for gcc version to set c++11 or c++0x
@@ -31,7 +63,7 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 		# compiler is gcc 4.7 or higher. Force c++11.
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	endif(NOT (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7))
-elseif(MSVC AND (MSVC10 OR MSVC11))
+elseif(MSVC AND (MSVC_VERSION GREATER 1599))
 	message("Support Visual Studio!")
 else("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 	message(FATAL_ERROR "Your C++ compiler does not support C++11.")
@@ -39,17 +71,15 @@ endif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 
 
 # Set lib path for Windows
-if(WIN32 AND NOT MINGW)
-	if(MSVC)
-		if(CMAKE_CL_64)
-			set(CMAKE_LIBRARY_PATH ${CMAKE_SOURCE_DIR}/lib/x64)
-			link_directories("${CMAKE_SOURCE_DIR}/lib/x64")
-		else(CMAKE_CL_64)
-			set(CMAKE_LIBRARY_PATH ${CMAKE_SOURCE_DIR}/lib/x86)
-			link_directories("${CMAKE_SOURCE_DIR}/lib/x86")
-		endif(CMAKE_CL_64)
-	endif(MSVC)
-endif(WIN32 AND NOT MINGW)
+if(MSVC)
+	if(CMAKE_CL_64)
+		set(CMAKE_LIBRARY_PATH ${CMAKE_SOURCE_DIR}/lib/x64)
+		link_directories("${CMAKE_SOURCE_DIR}/lib/x64")
+	else(CMAKE_CL_64)
+		set(CMAKE_LIBRARY_PATH ${CMAKE_SOURCE_DIR}/lib/x86)
+		link_directories("${CMAKE_SOURCE_DIR}/lib/x86")
+	endif(CMAKE_CL_64)
+endif(MSVC)
 
 add_executable(trillek-server ${ALL_SRC} )
 target_link_libraries(trillek-server )

@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include "net/network.h"
+#include "filesystem.hpp"
+#include "server.hpp"
 
 int main(int argc, char* argv[], char** env) {
 	network::TCPConnection lhost;
@@ -13,6 +15,14 @@ int main(int argc, char* argv[], char** env) {
 	int i, rcc;
 	network::NetworkAddress la;
 	char * dbf = 0;
+	Server::Configuration serverconfig;
+
+	{
+		Server::LocalFile sconf("config.json");
+		if(sconf.isOpen()) {
+			serverconfig.Load(sconf);
+		}
+	}
 	// Welcome message
 	std::string txt = "\xe3\x81\x8a\xe3\x81\xaf\xe3\x82\x88\xe3\x81\x86\xef\xbc\x81";
 

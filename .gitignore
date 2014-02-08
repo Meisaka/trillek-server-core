@@ -1,16 +1,3 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
 
 # CMake stuff
 CMakeFiles
@@ -18,9 +5,11 @@ CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
+build/
 
 # backups
 *~
+*.swp
 
 # other
 bin
