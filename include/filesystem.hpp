@@ -19,23 +19,28 @@ namespace Server {
 		~LocalFilesystem();
 	};
 
+	template <class T>
 	class File {
 	public:
-		File(Filesystem &fs) : filesys(fs) {}
-		virtual ~File();
+		File(T &fs) : filesys(fs) {}
+		virtual ~File() {
+			Close();
+		}
 
-		virtual bool isOpen();
-		virtual bool Open();
-		virtual bool Open(std::string);
-		virtual void Close();
+		virtual bool isOpen() {
+			return false;
+		}
+		virtual bool Open() {
+			return false;
+		}
+		virtual bool Open(std::string) {
+			return false;
+		}
+		virtual void Close() {
+		}
 	private:
-		Filesystem & filesys;
+		T &filesys;
 	};
 
-	class LocalFile : public File {
-	public:
-		LocalFile();
-		LocalFile(std::string);
-		~LocalFile();
-	};
+	typedef File<LocalFilesystem> LocalFile;
 }

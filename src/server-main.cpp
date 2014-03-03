@@ -24,9 +24,11 @@ int main(int argc, char* argv[], char** env) {
 	rapidjson::GenericStringBuffer<rapidjson::UTF8<char>> outst;
 
 	Server::Configuration serverconfig;
+	Server::LocalFilesystem lfs;
 
 	{
-		Server::LocalFile sconf("config.json");
+		Server::LocalFile sconf(lfs);
+		sconf.Open("config.json");
 		if(sconf.isOpen()) {
 			serverconfig.Load(sconf);
 		}
