@@ -16,6 +16,6 @@ namespace Server {
 		void SendRaw(const char *, int);
 		void SendRawString(std::string);
 	protected:
-		std::unique_ptr<network::TCPConnection> tcpremote;
+		std::weak_ptr<network::TCPConnection> tcpremote;
 	};
 }

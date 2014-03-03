@@ -9,10 +9,13 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(SERVER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(SERVER_INC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
+set(RAPIDJSONROOT "" CACHE PATH "Path to rapidjson (non-standard locations)")
+
 set(ALL_INCLUDE_DIRS
 	"${PROJECT_BINARY_DIR}"
 	"${SERVER_INC}"
 	"${SERVER_SRC}/net/include"
+	"${RAPIDJSONROOT}/include"
 	)
 
 file(GLOB NET_SRC
