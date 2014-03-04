@@ -65,28 +65,37 @@ int main(int argc, char* argv[], char** env) {
 	while(lhost.IsListening()) {
 		if(lhost.Select(true,false,false,0,0)) { // Handle new connections
 			rhost = new network::TCPConnection;
-			rhost->Accept(&lhost);
-			rhost->Send(txt.c_str(), txt.length()); // send welcome
-			std::cout << "Connection from " << rhost->GetRemote().ToString() << std::endl;
-			rhosts.push_back(std::shared_ptr<network::TCPConnection>(rhost));
-			uahosts.push_back(std::weak_ptr<network::TCPConnection>(rhosts[rhosts.size()-1]));
-			rhost = NULL;
+			if(lhost.Accept(rhost)) {
+				rhost->Send(txt); // send welcome
+				std::cout << "Connection from " << rhost->GetRemote().ToString() << std::endl;
+				rhosts.push_back(std::shared_ptr<network::TCPConnection>(rhost));
+				uahosts.push_back(std::weak_ptr<network::TCPConnection>(rhosts[rhosts.size() - 1]));
+				rhost = NULL;
+			}
+			else {
+				delete rhost;
+			}
 		}
+
 		// handle messages from the Virtual CPU process/thread here
 
 		// TODO Send any sync messages here
 		//
+
+		// Receive UDP traffic
 		if((rcc = uhost.RecvFrom(ra, dbf, 1500)) > 0) {
 			std::cout << "M-Recv: " << rcc << " from " << ra.ToString() << std::endl;
 			inbuf.assign(dbf, rcc);
 			inbuf += "!";
 			uhost.SendTo(ra, inbuf);
+
+			// Send message to all TCP hosts
+			for(auto itrt = rhosts.begin(); itrt != rhosts.end(); itrt++) {
+				if((*itrt)->IsConnected() && (*itrt)->Select(false,true,false,0,0)) {
+					(*itrt)->Send(inbuf);
+				}
+			}
 		}
-		//for(auto itrt = rhosts.begin(); itrt != rhosts.end(); itrt++) {
-		//	if((*itrt)->IsConnected() && (*itrt)->Select(false,true,false,0,0)) {
-		//		(*itrt)->Send("X", 1);
-		//	}
-		//}
 
 		for(auto itrc = uahosts.begin(); itrc != uahosts.end(); itrc++) {
 			if((*itrc).expired()) {
@@ -107,7 +116,7 @@ int main(int argc, char* argv[], char** env) {
 							std::cout << "Recv: " << inbuf.length() << std::endl;
 							for(auto itrt = rhosts.begin(); itrt != rhosts.end(); itrt++) {
 								if(itrt != itrc && (*itrt)->IsConnected() && (*itrt)->Select(false,true,false,0,0)) {
-									(*itrt)->Send(inbuf.data(), inbuf.length());
+									(*itrt)->Send(inbuf);
 								}
 							}
 						}
