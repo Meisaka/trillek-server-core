@@ -83,8 +83,9 @@ if(MSVC)
 endif(MSVC)
 
 add_subdirectory(net)
+include_directories(net/include)
 
-add_executable(trillek-server ${ALL_SRC} netport)
-target_link_libraries(trillek-server )
+add_executable(trillek-server ${ALL_SRC})
+target_link_libraries(trillek-server netport)
 #SET_TARGET_PROPERTIES(trillek-server PROPERTIES LINKER_LANGUAGE "C++")
 
