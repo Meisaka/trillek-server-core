@@ -14,7 +14,6 @@ set(RAPIDJSONROOT "" CACHE PATH "Path to rapidjson (non-standard locations)")
 set(ALL_INCLUDE_DIRS
 	"${PROJECT_BINARY_DIR}"
 	"${SERVER_INC}"
-	"${SERVER_SRC}/net/include"
 	"${RAPIDJSONROOT}/include"
 	)
 
@@ -46,7 +45,6 @@ file(GLOB MAIN_SRC
 	)
 
 set(ALL_SRC
-	${NET_SRC}
 	${MAIN_SRC}
 	${SIM_SRC}
 	${CONTEXT_SRC}
@@ -84,7 +82,9 @@ if(MSVC)
 	endif(CMAKE_CL_64)
 endif(MSVC)
 
-add_executable(trillek-server ${ALL_SRC} )
+add_subdirectory(net)
+
+add_executable(trillek-server ${ALL_SRC} netport)
 target_link_libraries(trillek-server )
 #SET_TARGET_PROPERTIES(trillek-server PROPERTIES LINKER_LANGUAGE "C++")
 
